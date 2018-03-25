@@ -1,0 +1,16 @@
+---
+
+
+- name: Copy setup.sh to other machine
+  copy:
+    src: setup.sh
+    dest: /tmp
+    mode: u=rwx
+
+
+- name: Exec Setup.sh
+  command: bash -c /tmp/setup.sh
+
+
+- name: Install Docker
+  yum: name=docker-ce

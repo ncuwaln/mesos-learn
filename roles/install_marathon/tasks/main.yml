@@ -1,0 +1,19 @@
+---
+
+
+- name: Download marathon
+  run_once: true
+  delegate_to: "127.0.0.1"
+  get_url:
+    url: http://downloads.mesosphere.com/marathon/v1.5.1/marathon-1.5.1.tgz
+    dest: "{{software_path}}"
+
+- name: Copy to Other machine
+  copy:
+    src: "{{software_path}}/marathon-1.5.1.tgz"
+    dest: /tmp
+    mode: u=rw
+
+
+- name: Unarchive zookeeper
+  unarchive: src=/tmp/marathon-1.5.1.tgz dest={{remote_dir}} copy=yes

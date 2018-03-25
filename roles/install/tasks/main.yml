@@ -1,0 +1,59 @@
+---
+
+- name: Disable selinux
+  selinux:
+    state: disabled
+
+
+- name: Install tools
+  yum: name={{ item }}
+  with_items:
+    - tar
+    - git
+
+
+- name: Fetch the Apache Maven repo file
+  get_url:
+    url: http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo
+    dest: /etc/yum.repos.d/epel-apache-maven.repo
+
+
+- name: Install the EPEL repo
+  yum: name=epel-release
+
+
+- name: Copy shell file
+  copy:
+    src: subversion.sh
+    dest: /tmp
+    mode: u=rwx
+
+
+- name: Create a WANdisco SVN repo file to install the correct version
+  command: bash -c /tmp/subversion.sh
+
+
+- name: update
+  yum: name=systemd state=latest
+
+
+- name: Install essential development tools
+  command: yum groupinstall -y "Development Tools"
+
+
+- name: Install other mesos dependencies
+  yum: name={{ item }}
+  with_items:
+    - apache-maven
+    - python-devel
+    - python-six
+    - python-virtualenv
+    - java-1.8.0-openjdk-devel
+    - zlib-devel
+    - libcurl-devel
+    - openssl-devel
+    - cyrus-sasl-devel
+    - cyrus-sasl-md5
+    - apr-devel
+    - subversion-devel
+    - apr-util-devel

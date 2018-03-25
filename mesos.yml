@@ -1,0 +1,46 @@
+---
+
+- hosts: all
+  remote_user: root
+  roles:
+    - install
+  tags: install_denpendencies
+
+
+
+- hosts: all
+  remote_user: root
+  vars:
+    software_path: /tmp
+    remote_dir: /tmp
+    test: false
+  roles:
+    - install_mesos
+  tags: install_mesos
+
+
+- hosts: slave
+  remote_user: root
+  roles:
+    - install_docker
+  tags: install_docker
+
+
+- hosts: master
+  remote_user: root
+  vars:
+    software_path: /tmp
+    remote_dir: /home
+  roles:
+    - install_zk
+  tags: install_zk
+
+
+- hosts: master
+  remote_user: root
+  vars:
+    software_path: /tmp
+    remote_dir: /home
+  roles:
+    - install_marathon
+  tags: install_marathon

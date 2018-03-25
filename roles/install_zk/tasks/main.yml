@@ -1,0 +1,24 @@
+---
+
+
+- name: Download zookeeper
+  run_once: true
+  delegate_to: "127.0.0.1"
+  get_url:
+    url: http://mirrors.hust.edu.cn/apache/zookeeper/zookeeper-3.4.11/zookeeper-3.4.11.tar.gz
+    dest: "{{software_path}}"
+
+
+- name: Copy to other machine
+  copy:
+    src: "{{software_path}}/zookeeper-3.4.11.tar.gz"
+    dest: "/tmp"
+    mode: u=rw
+
+
+- name: Unarchive zookeeper
+  unarchive: src=/tmp/zookeeper-3.4.11.tar.gz dest={{remote_dir}} copy=yes
+
+
+- name: Replace cfg file
+  template: src=zoo.cfg.j2 dest={{remote_dir}}/zookeeper-3.4.11/conf/zoo.cfg

@@ -1,0 +1,58 @@
+---
+
+- name: check mesos.tar.gz file
+  delegate_to: "127.0.0.1"
+  run_once: true
+  command: ls "{{software_path}}/mesos-1.4.1.tar.gz"
+  ignore_errors: true
+  register: file_exist
+
+
+- name: Download mesos
+  run_once: true
+  delegate_to: "127.0.0.1"
+  get_url:
+    url: http://archive.apache.org/dist/mesos/1.4.1/mesos-1.4.1.tar.gz
+    dest: "{{software_path}}"
+  when: file_exist['failed']
+
+
+- name: Copy mesos to other machine
+  copy:
+    src: "{{software_path}}/mesos-1.4.1.tar.gz"
+    dest: "{{remote_dir}}"
+
+
+- name: Unarchive mesos
+  unarchive: src={{remote_dir}}/mesos-1.4.1.tar.gz dest={{remote_dir}} copy=yes
+
+
+- name: Make build dir
+  file:
+    path: "{{remote_dir}}/mesos-1.4.1/build"
+    state: directory
+
+
+- name: Configure
+  command: chdir="{{remote_dir}}/mesos-1.4.1" ./configure
+
+
+- name: make
+  make:
+    chdir: "{{remote_dir}}/mesos-1.4.1"
+    params:
+      NUM_THREAD: 4
+
+
+- name: make check
+  make:
+    chdir: "{{remote_dir}}/mesos-1.4.1"
+    target: check
+  when: "{{test}}"
+
+
+- name: Make install
+  sudo: yes
+  make:
+    chdir: "{{remote_dir}}/mesos-1.4.1"
+    target: install
