@@ -14,3 +14,7 @@
 
 - name: Install Docker
   yum: name=docker-ce
+
+
+- name: Enable docker
+  systemd: name=docker enabled=yes

@@ -9,7 +9,7 @@ syncLimit=5
 # the directory where the snapshot is stored.
 # do not use /tmp for storage, /tmp here is just
 # example sakes.
-dataDir=/var/lib/zookeeper
+dataDir={{dataDir}}
 # the port at which the clients will connect
 clientPort=2181
 # the maximum number of client connections.
@@ -27,3 +27,5 @@ clientPort=2181
 # Set to "0" to disable auto purge feature
 #autopurge.purgeInterval=1
 server.1=192.168.50.4:2888:3888
+server.2=192.168.50.5:2888:3888
+server.3=192.168.50.6:2888:3888

@@ -7,12 +7,9 @@
   tags: install_denpendencies
 
 
-
 - hosts: all
   remote_user: root
   vars:
-    software_path: /tmp
-    remote_dir: /tmp
     test: false
   roles:
     - install_mesos
@@ -28,19 +25,34 @@
 
 - hosts: master
   remote_user: root
-  vars:
-    software_path: /tmp
-    remote_dir: /home
   roles:
     - install_zk
+  vars:
+    dataDir: "{{remote_dir}}/zookeeper/data"
   tags: install_zk
 
 
 - hosts: master
   remote_user: root
-  vars:
-    software_path: /tmp
-    remote_dir: /home
   roles:
     - install_marathon
   tags: install_marathon
+
+
+- hosts: master
+  remote_user: root
+  vars:
+    quorum: 2
+    mesos_zk: zk://192.168.50.4:2181,192.168.50.5:2181,192.168.50.6:2181/mesos
+    master: zk://192.168.50.4:2181,192.168.50.5:2181,192.168.50.6:2181/mesos
+    marathon_zk: zk://192.168.50.4:2181,192.168.50.5:2181,192.168.50.6:2181/marathon
+  roles:
+    - start_master
+  tags: start_master
+#
+#
+# - hosts: slave
+#   remote_user: root
+#   roles:
+#     - start_slave
+#   tags: start_slave

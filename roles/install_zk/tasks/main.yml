@@ -17,8 +17,34 @@
 
 
 - name: Unarchive zookeeper
-  unarchive: src=/tmp/zookeeper-3.4.11.tar.gz dest={{remote_dir}} copy=yes
+  unarchive: src=/tmp/zookeeper-3.4.11.tar.gz dest=/tmp copy=yes
 
 
 - name: Replace cfg file
-  template: src=zoo.cfg.j2 dest={{remote_dir}}/zookeeper-3.4.11/conf/zoo.cfg
+  template: src=zoo.cfg.j2 dest=/tmp/zookeeper-3.4.11/conf/zoo.cfg
+
+- name: Clear zookeeper home
+  command: rm -rf {{remote_dir}}/zookeeper
+
+- name: Mv all to zookeeper home
+  command: mv -f /tmp/zookeeper-3.4.11 {{remote_dir}}/zookeeper/
+
+- name: Make data dir
+  file: path={{remote_dir}}/zookeeper/data state=directory
+
+- name: Make id file
+  file: path={{remote_dir}}/zookeeper/data/myid state=touch
+
+- name: get ip
+  shell: ip addr|grep eth1|grep inet|awk '{print $2}'| cut -d / -f 1
+  register: local_ip
+
+- name: get id
+  shell: "grep {{local_ip['stdout']}} {{remote_dir}}/zookeeper/conf/zoo.cfg|cut -d \\= -f 1|cut -d \\. -f 2"
+  register: myid
+
+- name: echo
+  debug: msg={{myid}}
+
+- name: write id
+  lineinfile: path={{remote_dir}}/zookeeper/data/myid line={{myid['stdout']}}

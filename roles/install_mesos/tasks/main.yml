@@ -20,33 +20,33 @@
 - name: Copy mesos to other machine
   copy:
     src: "{{software_path}}/mesos-1.4.1.tar.gz"
-    dest: "{{remote_dir}}"
+    dest: /tmp
 
 
 - name: Unarchive mesos
-  unarchive: src={{remote_dir}}/mesos-1.4.1.tar.gz dest={{remote_dir}} copy=yes
+  unarchive: src=/tmp/mesos-1.4.1.tar.gz dest=/tmp copy=yes
 
 
 - name: Make build dir
   file:
-    path: "{{remote_dir}}/mesos-1.4.1/build"
+    path: "/tmp/mesos-1.4.1/build"
     state: directory
 
 
 - name: Configure
-  command: chdir="{{remote_dir}}/mesos-1.4.1" ./configure
+  command: chdir="/tmp/mesos-1.4.1" ./configure --prefix={{remote_dir}}/mesos
 
 
 - name: make
   make:
-    chdir: "{{remote_dir}}/mesos-1.4.1"
+    chdir: "/tmp/mesos-1.4.1"
     params:
-      NUM_THREAD: 4
+      NUM_THREAD: 2
 
 
 - name: make check
   make:
-    chdir: "{{remote_dir}}/mesos-1.4.1"
+    chdir: "/tmp/mesos-1.4.1"
     target: check
   when: "{{test}}"
 
@@ -54,5 +54,15 @@
 - name: Make install
   sudo: yes
   make:
-    chdir: "{{remote_dir}}/mesos-1.4.1"
+    chdir: "/tmp/mesos-1.4.1"
     target: install
+
+
+- name: make data dir
+  file: path={{item}} state=directory
+  with_items:
+    - /data/mesos/master/log
+    - /data/mesos/slave/log
+
+- name: Copy mesos.sh
+  copy: src=mesos.sh dest={{remote_dir}}/mesos/sbin mode="u=rwx"

@@ -1,0 +1,11 @@
+---
+
+- name: get ip
+  shell: ip addr|grep eth1|grep inet|awk '{print $2}'| cut -d / -f 1
+  register: local_ip
+
+- name: start docker
+  systemd: name=docker state=started
+
+- name: start mesos slave
+  shell: "{{remote_dir}}/mesos/sbin/mesos.sh start_slave --hostname {{local_ip['stdout']}} --advertise_ip {{local_ip['stdout']}} --master {{master}}"

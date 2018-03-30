@@ -1,0 +1,15 @@
+---
+
+- name: get ip
+  shell: ip addr|grep eth1|grep inet|awk '{print $2}'| cut -d / -f 1
+  register: local_ip
+
+- name: start zookeeper
+  shell: "{{remote_dir}}/zookeeper/bin/zkServer.sh start"
+
+
+- name: start mesos master
+  shell: "{{remote_dir}}/mesos/sbin/mesos.sh start_master --hostname {{local_ip['stdout']}} --advertise_ip {{local_ip['stdout']}} --quorum {{quorum}} --zk {{mesos_zk}}"
+
+- name: start marathon
+  shell: "{{remote_dir}}/marathon/bin/marathon.sh start --master {{master}} --zk {{marathon_zk}} --libmesos_path {{remote_dir}}/mesos/lib/libmesos.so --hostname {{local_ip['stdout']}}"
