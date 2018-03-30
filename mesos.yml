@@ -49,10 +49,12 @@
   roles:
     - start_master
   tags: start_master
-#
-#
-# - hosts: slave
-#   remote_user: root
-#   roles:
-#     - start_slave
-#   tags: start_slave
+
+
+- hosts: slave
+  remote_user: root
+  vars:
+    master: zk://192.168.50.4:2181,192.168.50.5:2181,192.168.50.6:2181/mesos
+  roles:
+    - start_slave
+  tags: start_slave
