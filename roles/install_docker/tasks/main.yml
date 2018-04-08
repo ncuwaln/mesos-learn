@@ -18,3 +18,8 @@
 
 - name: Enable docker
   systemd: name=docker enabled=yes
+
+
+- name: add private registry
+  add_docker_registry: uri={{item['uri']}} auth={{item['auth']}}
+  with_items: "{{private_registry}}"

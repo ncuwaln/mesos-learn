@@ -10,6 +10,7 @@ master=""
 zk=""
 libmesos_path=""
 hostname=""
+log_dir="/data/marathon/log"
 
 
 case "$1" in
@@ -20,6 +21,7 @@ case "$1" in
         --zk ) zk=$3; shift 2;;
         --libmesos_path ) libmesos_path=$3; shift 2;;
         --hostname ) hostname=$3; shift 2;;
+        --log_dir ) log_dir=$3; shift 2;;
         * ) break;;
       esac
     done
@@ -28,11 +30,14 @@ case "$1" in
       exit -1
     fi
     echo -n "Staring mesos-master ..."
+    log_file="$log_dir/marathon`date +%s`.out"
     if [ ["$libmesos_path" = ""] ]; then
-      nohup "${MARATHONBINDIR}/marathon" "--master" "$master" "--zk" "$zk" "--hostname" "$hostname"&
+      nohup "${MARATHONBINDIR}/marathon" "--master" "$master" "--zk" "$zk" "--hostname" "$hostname" \
+      > "$log_file" 2>&1 < /dev/null &
     else
       export MESOS_NATIVE_JAVA_LIBRARY=${libmesos_path}
-      nohup "${MARATHONBINDIR}/marathon" "--master" "$master" "--zk" "$zk" "--hostname" "$hostname"&
+      nohup "${MARATHONBINDIR}/marathon" "--master" "$master" "--zk" "$zk" "--hostname" "$hostname" \
+      > "$log_file" 2>&1 < /dev/null &
     fi
     echo "started"
     ;;

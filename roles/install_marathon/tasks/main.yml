@@ -23,6 +23,12 @@
   command: rm -rf {{remote_dir}}/marathon
 
 
+- name: Make data dir
+  file:
+    path: "/data/marathon/log"
+    state: directory
+
+
 - name: Mv all to marathon home
   command: mv -f /tmp/marathon-1.5.0-96-gf84298d {{remote_dir}}/marathon
 

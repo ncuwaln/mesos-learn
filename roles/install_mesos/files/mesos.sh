@@ -19,6 +19,7 @@ advertise_ip=""
 quorum=""
 zk=""
 master=""
+containerizers="docker,mesos"
 
 
 case "$1" in
@@ -62,6 +63,7 @@ case "$1" in
         --hostname ) hostname=$3; shift 2;;
         --advertise_ip ) advertise_ip=$3; shift 2;;
         --master ) master=$3; shift 2;;
+        --containerizers ) containerizers=$3; shift 2;;
         * ) break;;
       esac
     done
@@ -71,7 +73,7 @@ case "$1" in
     fi
     echo "Starting mesos slave server ..."
     nohup "${MESOSBINDIR}/mesos-agent" "--hostname=$hostname" "--advertise_ip=$advertise_ip" \
-    "--work_dir=$SLAVE_WORK_DIR" "--master=$master" "--log_dir=$SLAVE_WORK_DIR" &
+    "--work_dir=$SLAVE_WORK_DIR" "--master=$master" "--log_dir=$SLAVE_WORK_DIR" "--containerizers=$containerizers" &
     echo "started"
     ;;
   stop_slave )
